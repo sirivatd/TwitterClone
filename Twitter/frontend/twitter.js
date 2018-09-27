@@ -1,6 +1,12 @@
 const FollowToggle = require("./follow_toggle.js");
 const APIUtil = require("./api_util.js");
+const UsersSearch = require("./users_search.js");
 //let followToggles = [];
+
+function setUpSearch() {
+    const $search = jQuery(".users-search");
+    const usersSearch = new UsersSearch($search);
+}
 
 function setUpButtons() {
   const $followButtons = $(".follow-toggle");
@@ -20,3 +26,4 @@ function setUpButtons() {
 }
 
 $(setUpButtons);
+$(setUpSearch);

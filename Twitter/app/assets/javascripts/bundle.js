@@ -111,6 +111,16 @@ const APIUtil = {
     });
   },
 
+searchUsers: (queryValue, success) => {
+  // console.log(success);
+  return $.ajax({
+    url:`/users/search`,
+    method: "GET",
+    dataType: "JSON",
+    data: {"query": `${queryValue}`}
+  });
+},
+
   sayMyName: () => {
     console.log("We are in the utility");
   }
@@ -147,53 +157,51 @@ class FollowToggle {
   render (){
     console.log(this.$el.text);
     if (this.followState === "following" || this.followState === "unfollowing") {
+
       this.$el.text("Please Wait");
       this.$el.prop("disabled", "true");
-    }
-
-
-    if (this.followState === "followed") {
+    } else if (this.followState === "followed") {
       this.$el.text('UNFOLLOW!');
       this.$el.removeProp("disabled");
     } else {
       this.$el.text('FOLLOW!');
-        this.$el.removeProp("disabled");
+      this.$el.removeProp("disabled");
     }
 
     console.log("attempting to render");
   }
 
   toggle() {
-    if (this.followState === "followed") {
-      this.followState = "unfollowed";
-    } else {
+    if (this.followState === "following") {
       this.followState = "followed";
+    } else {
+      this.followState = "unfollowed";
     }
     // this.render();
   }
 
   handleClick(e) {
     e.preventDefault();
-    const that = this;
     // const utility = new APIUtil();
     let methString = "";
     if(this.followState === "followed") {
       // methString = "DELETE";
-  //     this.followState = "unfollowing";
-
+      this.followState = "unfollowing";
+      this.render();
 
       APIUtil.unfollowUser(this.userId)
         .then((res) => {
         console.log();
-        that.toggle();
-        that.render();
+        this.toggle();
+        this.render();
       });
-    } else {
+    } else if (this.followState === "unfollowed") {
       // methString = "POST";
-      // this.followState = "following";
+      this.followState = "following";
+      this.render();
       APIUtil.followUser(this.userId).then((res) => {
-        that.toggle();
-        that.render();
+        this.toggle();
+        this.render();
       });
     }
 
@@ -216,7 +224,13 @@ module.exports = FollowToggle;
 
 const FollowToggle = __webpack_require__(/*! ./follow_toggle.js */ "./frontend/follow_toggle.js");
 const APIUtil = __webpack_require__(/*! ./api_util.js */ "./frontend/api_util.js");
+const UsersSearch = __webpack_require__(/*! ./users_search.js */ "./frontend/users_search.js");
 //let followToggles = [];
+
+function setUpSearch() {
+    const $search = jQuery(".users-search");
+    const usersSearch = new UsersSearch($search);
+}
 
 function setUpButtons() {
   const $followButtons = $(".follow-toggle");
@@ -236,6 +250,42 @@ function setUpButtons() {
 }
 
 $(setUpButtons);
+$(setUpSearch);
+
+
+/***/ }),
+
+/***/ "./frontend/users_search.js":
+/*!**********************************!*\
+  !*** ./frontend/users_search.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(/*! ./api_util.js */ "./frontend/api_util.js");
+
+class UsersSearch {
+  constructor ($el){
+    this.$el = $el;
+    this.$input = this.$el.find(".name-search");
+    this.$users = this.$el.find('.users');
+    this.handleInput();
+  }
+
+  handleInput(){
+    function showUsers (res) {
+     console.log(`${res}`);
+    }
+     this.$input.on("input", e => {
+       //insert $(e.target).val() into search
+      APIUtil.searchUsers($(e.target).val(), function (res) {
+        console.log(res);
+      });
+     });
+  }
+}
+
+module.exports = UsersSearch;
 
 
 /***/ })

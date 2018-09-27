@@ -16,6 +16,16 @@ const APIUtil = {
     });
   },
 
+searchUsers: (queryValue, success) => {
+  // console.log(success);
+  return $.ajax({
+    url:`/users/search`,
+    method: "GET",
+    dataType: "JSON",
+    data: {"query": `${queryValue}`}
+  });
+},
+
   sayMyName: () => {
     console.log("We are in the utility");
   }

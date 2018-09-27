@@ -17,53 +17,51 @@ class FollowToggle {
   render (){
     console.log(this.$el.text);
     if (this.followState === "following" || this.followState === "unfollowing") {
+
       this.$el.text("Please Wait");
       this.$el.prop("disabled", "true");
-    }
-
-
-    if (this.followState === "followed") {
+    } else if (this.followState === "followed") {
       this.$el.text('UNFOLLOW!');
       this.$el.removeProp("disabled");
     } else {
       this.$el.text('FOLLOW!');
-        this.$el.removeProp("disabled");
+      this.$el.removeProp("disabled");
     }
 
     console.log("attempting to render");
   }
 
   toggle() {
-    if (this.followState === "followed") {
-      this.followState = "unfollowed";
-    } else {
+    if (this.followState === "following") {
       this.followState = "followed";
+    } else {
+      this.followState = "unfollowed";
     }
     // this.render();
   }
 
   handleClick(e) {
     e.preventDefault();
-    const that = this;
     // const utility = new APIUtil();
     let methString = "";
     if(this.followState === "followed") {
       // methString = "DELETE";
-  //     this.followState = "unfollowing";
-
+      this.followState = "unfollowing";
+      this.render();
 
       APIUtil.unfollowUser(this.userId)
         .then((res) => {
         console.log();
-        that.toggle();
-        that.render();
+        this.toggle();
+        this.render();
       });
-    } else {
+    } else if (this.followState === "unfollowed") {
       // methString = "POST";
-      // this.followState = "following";
+      this.followState = "following";
+      this.render();
       APIUtil.followUser(this.userId).then((res) => {
-        that.toggle();
-        that.render();
+        this.toggle();
+        this.render();
       });
     }
 
